@@ -2,6 +2,9 @@ site_name: Abhinav Vadlapatla
 
 theme:
   name: material
+  palette:
+    primary: blue
+  #custom_dir: overrides
   features:
     - instant
     - tabs
@@ -17,3 +20,10 @@ markdown_extensions:
       permalink: true
 
 repo_url: https://github.com/avadlapatla/blog/
+
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/abhinav-vadlapatla/
+
+copyright: "Copyright &copy; 2020 Abhinav Vadlapatla"

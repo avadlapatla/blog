@@ -5,7 +5,7 @@
 
 
 ###Setup
-EKSCTL supports creating and managing clusters leveraging YAML files. Using the following YAML configuration file, eksctl creates the cluster named west-example in the us-west-2 region. It then provisions EKS managed node group with SSM agent pre installed.
+eksctl supports creating and managing clusters leveraging YAML files. Using the following YAML configuration file, eksctl creates the cluster named west-example in the us-west-2 region. It then provisions EKS managed node group with SSM agent pre installed.
 
 ```
 apiVersion: eksctl.io/v1alpha5
