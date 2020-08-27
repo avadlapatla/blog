@@ -1,0 +1,85 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: west-example
+  region: us-west-2
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+    attachPolicy:
+      Version: "2012-10-17"
+      Statement:
+      - Effect: Allow
+        Action:
+        - "autoscaling:DescribeAutoScalingGroups"
+        - "autoscaling:DescribeAutoScalingInstances"
+        - "autoscaling:DescribeLaunchConfigurations"
+        - "autoscaling:DescribeTags"
+        - "ec2:DescribeLaunchTemplateVersions"
+        Resource: '*'
+      - Effect: Allow
+        Action:
+        - "autoscaling:SetDesiredCapacity"
+        - "autoscaling:TerminateInstanceInAutoScalingGroup"
+        Resource: '*'
+        Condition:
+          StringEquals:
+            autoscaling:ResourceTag/k8s.io/cluster-autoscaler/enabled : true
+            autoscaling:ResourceTag/k8s.io/cluster-autoscaler/west-example:
+              - owned
+              - shared
+
+managedNodeGroups:
+  - name: managed-ng-1
+    minSize: 1
+    desiredCapacity: 1
+    maxSize: 4
+    instanceType: t3.medium
+    preBootstrapCommands:
+    - yum install -y amazon-ssm-agent
+    - systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
+    labels:
+      role: worker
+    tags:
+      nodegroup-name: managed-ng-1
+    privateNetworking: true
+    iam:
+      attachPolicyARNs:
+      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+  - name: managed-ng-2
+    ami: ami-05bc8cd159ecc4bcb
+    minSize: 1
+    desiredCapacity: 1
+    maxSize: 4
+    instanceType: t3.medium
+    preBootstrapCommands:
+    - yum install -y amazon-ssm-agent
+    - systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
+    labels:
+      role: worker
+    tags:
+      nodegroup-name: managed-ng-2
+    privateNetworking: true
+    overrideBootstrapCommand: |
+      /etc/eks/bootstrap.sh west-example --kubelet-extra-args '--serialize-image-pulls=true --cpu-cfs-quota=true'
+    iam:
+      attachPolicyARNs:
+      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+fargateProfiles:
+  - name: fp-kube-system
+    selectors:
+      - namespace: kube-system
+        labels:
+          runtime: fargate

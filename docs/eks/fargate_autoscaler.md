@@ -1,13 +1,6 @@
 #Deploying Cluster Autoscaler on EKS Fargate
 
 ```
-apiVersion: eksctl.io/v1alpha5
-kind: ClusterConfig
-
-metadata:
-  name: west-example
-  region: us-west-2
-
 iam:
   withOIDC: true
   serviceAccounts:
@@ -37,39 +30,16 @@ iam:
               - owned
               - shared
 
-managedNodeGroups:
-  - name: managed-ng-1
-    minSize: 2
-    desiredCapacity: 2
-    maxSize: 4
-    instanceType: t3.medium
-    preBootstrapCommands:
-    - yum install -y amazon-ssm-agent
-    - systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
-    labels:
-      role: worker
-    tags:
-      nodegroup-name: managed-ng-1
-    privateNetworking: true
-    iam:
-      attachPolicyARNs:
-      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-      - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
-      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
-
 fargateProfiles:
   - name: fp-kube-system
     selectors:
-      # All workloads in the "dev" Kubernetes namespace matching the following
-      # label selectors will be scheduled onto Fargate:
       - namespace: kube-system
         labels:
           runtime: fargate
 
 ```
 
-Save the above configuration as cluster.yaml
+Complete eksctl yaml configuration file can be downloaded from here [cluster.yaml](https://github.com/avadlapatla/blog/blob/master/docs/files/cluster.yaml){target=_blank}
 
 ### Fargate Profile
 
@@ -97,7 +67,7 @@ eksctl create iamserviceaccount -f cluster.yaml --override-existing-serviceaccou
 
 ### Cluster Autoscaler Configurtion
 
-Download the cluster autoscaler example deployment file from [here](https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml)
+Download the cluster autoscaler example deployment file from [here](https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml){target=_blank}
 
 Replace the deployment object from the above file with the following content
 
@@ -163,7 +133,7 @@ We are changing the way the cluster autoscaler is deployed on the EKS cluster. T
 
 Cluster autoscaler requires ca-certificates, we will deploy ca-certificates as configmap and mount the configmap as volume in our deployment.
 
-The ca-certificates file can be downloded from here [ssl-certs](../files/ca-certificates.crt) 
+The ca-certificates file can be downloded from here [ssl-certs](https://github.com/avadlapatla/blog/blob/master/docs/files/ca-certificates.crt){target=_blank}
 
 *Note ca-certificates file has been extracted from the pod running on Amazon Linux 2 (/etc/ssl/certs/ca-bundle.crt)
 

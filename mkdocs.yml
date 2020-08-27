@@ -14,10 +14,12 @@ nav:
   - EKS:
     - 'Setup EKS Cluster' : eks/cluster.md
     - 'Cluster Autoscaler on Fargate': eks/fargate_autoscaler.md
+    - 'Customizing kubelet': eks/kubelet_customization.md
 
 markdown_extensions:
   - toc:
       permalink: true
+  - attr_list
 
 repo_url: https://github.com/avadlapatla/blog/
 
