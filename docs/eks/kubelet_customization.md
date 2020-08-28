@@ -1,6 +1,6 @@
 # Kubelet Customization on Managed Node Groups using eksctl
 
-Amazon EKS managed node groups automates the provisioning and lifecycle management of Kubernetes nodes for you. Recently support for custom AMI and launch template has been added to the feature set [Launch Announcement](https://aws.amazon.com/blogs/containers/introducing-launch-template-and-custom-ami-support-in-amazon-eks-managed-node-groups/) .
+Amazon EKS managed node groups automates the provisioning and lifecycle management of Kubernetes nodes for you. Recently support for custom AMI and launch template has been added to the feature set [Launch Announcement](https://aws.amazon.com/blogs/containers/introducing-launch-template-and-custom-ami-support-in-amazon-eks-managed-node-groups/){target=_blank} .
 
 eksctl has been updated to support this feature for managed node group. Kubelet args can be passed to bootstrap script via --kubelet-extra-args using **overrideBootstrapCommand** field. However, this command can only be set when a custom AMI is specified, so for this example we will just use EKS Optimized AMI.
 
